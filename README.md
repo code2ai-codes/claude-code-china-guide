@@ -50,8 +50,11 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 |---|---|
 | `Is a directory` | [升级 · 软链指向](docs/upgrade.md#软链必须指到二进制文件本身) |
 | 请求全部超时，但 curl 直连端点是通的 | [排错 · 残留代理变量](docs/troubleshooting.md#请求全部超时但-curl-直连端点是通的) |
+| **小请求正常，一发长内容就卡死** | [网络 · MTU 黑洞](docs/network-issues.md#一小请求正常一发长内容就卡死--mtu-黑洞) |
+| 时通时不通，或者慢得离谱 | [网络 · IPv6 路由](docs/network-issues.md#二ipv6-线路不通但系统优先走-ipv6) |
 | `401` / `403` | [排错 · 认证失败](docs/troubleshooting.md#401--403) |
 | `404`，但配置看着都对 | [配置 · base_url 路径规则](docs/configuration.md#base_url-的路径规则) |
+| 改了配置文件还是连旧地址 | [网络 · 配置生效优先级](docs/network-issues.md#四配置写进去了--当前-shell-生效) |
 | `temperature is deprecated for this model` | [排错 · 参数弃用](docs/troubleshooting.md#temperature-is-deprecated-for-this-model) |
 | `claude update` 卡住不动最后超时 | [升级 · 从镜像源取同一份二进制](docs/upgrade.md) |
 | 不知道自己装的是 npm 版还是 native 版 | [安装 · 确认安装方式](docs/install.md#确认自己装的是哪种) |
@@ -64,6 +67,9 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
   临时生效与持久化的区别，以及 `base_url` 的路径规则（`404` 的头号原因）
 - [`docs/troubleshooting.md`](docs/troubleshooting.md)——实际会撞上的报错：
   认证失败、路径不对、请求全超时、WSL 的网络栈问题、参数弃用
+- [`docs/network-issues.md`](docs/network-issues.md)——最难查的那一类：
+  **MTU 黑洞**（小请求正常、长内容卡死）、IPv6 路由不通、代理残留、
+  「配置写进去了但当前 shell 不生效」
 - [`docs/upgrade.md`](docs/upgrade.md)——自动升级卡住时从镜像源取同一份二进制，
   含一个会让人卡很久的目录布局坑
 
@@ -79,13 +85,31 @@ env | grep -i anthropic                  # 确认端点环境变量
 ls ~/.local/share/claude/versions/       # 查看已安装的版本
 ```
 
+## 把这些检查自动化
+
+上面这些诊断都可以手工一条条跑——**这份手册的目的就是让你不依赖任何工具也能查清楚**，
+所有命令在官方端点和任何第三方网关上都一样用。
+
+如果想省事，Code2AI 有一个免费的终端助手 `c2a`，其中 `c2a doctor` 把十几项检查
+串成一条命令：CLI 在不在 PATH、配置有没有真写进去、环境变量在当前 shell 生不生效、
+密钥有效性与限额状态、IPv4/IPv6 可达性、MTU 黑洞、代理干扰，
+最后发一个真实请求做端到端验证。每个错误都带对应的修复命令。
+
+```bash
+curl -fsSL https://console.code2ai.codes/install.sh | bash
+c2a doctor
+```
+
+⚠️ 说清楚：**`c2a` 本身免费，但它「取密钥、写配置」那部分需要 Code2AI 订阅才有意义。**
+纯排错的话，这份手册里的命令一个订阅都不需要。
+
 ## 关于 `ANTHROPIC_BASE_URL` 填什么
 
 这取决于你的接入方式：用官方订阅就填官方地址；如果因为支付方式等原因走第三方网关，
 就填对方给的地址。**客户端完全一样**，都是官方原生的 Claude Code CLI，
 区别只在这两个环境变量——这也意味着换回来的成本是零，改两行配置的事。
 
-这个仓库不推荐任何具体的接入服务，只讲怎么配、报错怎么查。
+**这份手册的排错内容不依赖任何特定的接入服务**，只讲怎么配、报错怎么查。
 
 ---
 
@@ -121,6 +145,12 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 | #1 ok, #2 times out | endpoint config | [`docs/configuration.md`](docs/configuration.md) |
 | both ok, `claude` still errors | install path | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | `claude update` hangs | release source | [`docs/upgrade.md`](docs/upgrade.md) |
+| small requests fine, long ones hang | **path MTU / IPv6** | [`docs/network-issues.md`](docs/network-issues.md) |
+
+The last row is the one people rarely guess: if an intermediate hop has a smaller
+MTU and the ICMP needed for path-MTU discovery is being dropped, small packets get
+through and large ones vanish silently — so it looks like the server hanging, not
+a network error.
 
 ### Note on `ANTHROPIC_BASE_URL`
 
