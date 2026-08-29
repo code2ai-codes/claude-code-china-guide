@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 这个仓库不该出现任何密钥文件。脚本只从环境变量读 ANTHROPIC_AUTH_TOKEN，
+# 下面几条是防止哪天有人图省事把密钥写进文件再提交上来。
+.env
+.env.*
+*.key
+*secret*
