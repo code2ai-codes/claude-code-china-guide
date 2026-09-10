@@ -43,6 +43,7 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 | 第 1 条正常、第 2 条超时 | 端点配置 | [`docs/configuration.md`](docs/configuration.md) |
 | 两条都正常但 `claude` 报错 | 安装方式或路径 | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | `claude update` 卡住 | 发布源 | [`docs/upgrade.md`](docs/upgrade.md) |
+| 还没选好接入方式 | —— | [`docs/third-party-services.md`](docs/third-party-services.md) |
 
 ## 按报错现象直接跳转
 
