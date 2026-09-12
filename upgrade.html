@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>升级：自动升级卡住时怎么办 · claude-code-china-guide</title>
+<meta name="description" content="claude update 走官方发布源，网络条件不佳时会长时间无响应最后超时。 这份文档给出从 npm 镜像源取同一份二进制手工替换的完整步骤， 以及一个会让人卡很久的目录布局坑。 只适用于 native 安装（~/.local/share/claude/versions/）。 不确定自己装的哪种见 ins">
+<link rel="canonical" href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="升级：自动升级卡住时怎么办 · claude-code-china-guide">
+<meta property="og:description" content="claude update 走官方发布源，网络条件不佳时会长时间无响应最后超时。 这份文档给出从 npm 镜像源取同一份二进制手工替换的完整步骤， 以及一个会让人卡很久的目录布局坑。 只适用于 native 安装（~/.local/share/claude/versions/）。 不确定自己装的哪种见 ins">
+<meta property="og:url" content="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">
+<meta property="og:locale" content="zh_CN">
+<style>
+:root{--fg:#1a1a1a;--dim:#57606a;--line:#d8dee4;--bg:#fff;--code:#f6f8fa;--link:#0969da}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);margin-bottom:32px}
+header .wrap{padding-top:18px;padding-bottom:14px}
+.brand{font-weight:600;font-size:15px;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--dim);font-weight:400}
+nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none}
+nav a:hover,nav a.on{color:var(--link)}
+nav a.on{font-weight:600}
+h1{font-size:30px;line-height:1.35;margin:0 0 20px}
+h2{font-size:22px;margin:38px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 10px}
+a{color:var(--link)}
+p,li{overflow-wrap:break-word}
+code{background:var(--code);padding:.15em .4em;border-radius:4px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:6px;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+blockquote{margin:18px 0;padding:2px 16px;border-left:3px solid var(--line);color:var(--dim)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:14px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media(max-width:600px){h1{font-size:25px}body{font-size:15.5px}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html#article",
+      "headline": "升级：自动升级卡住时怎么办",
+      "name": "升级：自动升级卡住时怎么办",
+      "description": "claude update 走官方发布源，网络条件不佳时会长时间无响应最后超时。 这份文档给出从 npm 镜像源取同一份二进制手工替换的完整步骤， 以及一个会让人卡很久的目录布局坑。 只适用于 native 安装（~/.local/share/claude/versions/）。 不确定自己装的哪种见 ins",
+      "inLanguage": "zh-CN",
+      "url": "https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html",
+      "wordCount": 2161,
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html"
+      },
+      "author": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "publisher": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.code2ai.codes/#organization",
+      "name": "Code2AI",
+      "url": "https://www.code2ai.codes/",
+      "description": "面向国内开发者的 Claude Code 接入网关，域名 code2ai.codes。"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="https://code2ai-codes.github.io/claude-code-china-guide/">claude-code-china-guide <span>· Code2AI 维护的开源手册</span></a>
+<nav><a href="https://code2ai-codes.github.io/claude-code-china-guide/">首页</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/getting-started.html">从零到跑通</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/install.html">安装</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/configuration.html">端点配置</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">排错</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">网络问题</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html" class="on">升级</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/third-party-services.html">接入服务五类</a></nav>
+</div></header>
+<main class="wrap">
+<h1>升级：自动升级卡住时怎么办</h1>
+<blockquote>
+<p><code>claude update</code> 走官方发布源，网络条件不佳时会长时间无响应最后超时。
+这份文档给出从 npm 镜像源取<strong>同一份二进制</strong>手工替换的完整步骤，
+以及一个会让人卡很久的目录布局坑。</p>
+<p>只适用于 native 安装（<code>~/.local/share/claude/versions/</code>）。
+不确定自己装的哪种见 <a href="install.html#确认自己装的是哪种"><code>install.md</code></a>。</p>
+</blockquote>
+<h2 id="现象">现象</h2>
+<pre><code class="language-bash">claude update
+# 或
+claude install
+</code></pre>
+<p>长时间无响应，最后超时。</p>
+<h2 id="解法从-npm-镜像源取同一份二进制">解法：从 npm 镜像源取同一份二进制</h2>
+<p>关键点是——<strong>npm 上的 <code>@anthropic-ai/claude-code-linux-x64</code> 包里就是同一个二进制文件</strong>，
+而 npmmirror 是国内常用镜像源，响应稳定。所以可以手工替换：</p>
+<pre><code class="language-bash"># 1. 查最新版本号
+curl -s https://registry.npmmirror.com/@anthropic-ai/claude-code/latest \
+  | grep -o '&quot;version&quot;:&quot;[^&quot;]*&quot;' | head -1
+
+# 2. 换成上面查到的版本号，别照抄
+V=2.1.238
+cd &quot;$(mktemp -d)&quot;
+curl -sSL -o p.tgz \
+  &quot;https://registry.npmmirror.com/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-$V.tgz&quot;
+tar xzf p.tgz      # 二进制在 package/claude
+</code></pre>
+<p><strong>选包提示</strong>：glibc 系统（Ubuntu、Debian、CentOS）用 <code>linux-x64</code>，
+别选 <code>-musl</code>——那是 Alpine 用的。</p>
+<h2 id="安装到版本目录并切换软链">安装到版本目录并切换软链</h2>
+<pre><code class="language-bash">D=~/.local/share/claude/versions/$V
+install -Dm755 package/claude &quot;$D/claude&quot;
+
+# 先确认新版本能跑
+&quot;$D/claude&quot; --version
+
+# 确认输出正确后，再执行这一步
+ln -sfn &quot;$D/claude&quot; ~/.local/bin/claude
+</code></pre>
+<p><strong>顺序很重要</strong>：先验证新二进制能跑，再切软链。反过来做，新版本有问题时
+你连一个可用的 <code>claude</code> 都没有了。</p>
+<h2 id="软链必须指到二进制文件本身">软链必须指到二进制文件本身</h2>
+<p>⚠️ 这一步错了，<code>claude</code> 会直接报 <code>Is a directory</code>。</p>
+<p><strong>两种目录布局并存</strong>，装之前必须先确认手上这个版本是哪种：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th><code>versions/&lt;版本&gt;</code> 是什么</th>
+<th>软链要指向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>早期</td>
+<td>ELF 二进制文件本身</td>
+<td><code>versions/&lt;版本&gt;</code></td>
+</tr>
+<tr>
+<td>较新（实测 2.1.219 起）</td>
+<td><strong>目录</strong>，二进制在里面</td>
+<td><code>versions/&lt;版本&gt;/claude</code></td>
+</tr>
+</tbody>
+</table>
+<p>一条命令判断：</p>
+<pre><code class="language-bash">V=2.1.238
+ls -la ~/.local/share/claude/versions/$V
+# 输出是文件 → 早期布局；是目录且里面有 claude → 新布局
+</code></pre>
+<p>如果按早期布局的习惯把软链指向<strong>目录</strong>，会得到这个报错：</p>
+<pre><code class="language-text">/home/用户名/.local/bin/claude: Is a directory
+</code></pre>
+<p><strong>排查第一步永远是看软链指向哪儿</strong>：</p>
+<pre><code class="language-bash">ls -la ~/.local/bin/claude
+</code></pre>
+<p>正确状态长这样（指向文件，不是目录）：</p>
+<pre><code class="language-text">lrwxrwxrwx ... /home/你的用户名/.local/bin/claude
+              -&gt; /home/你的用户名/.local/share/claude/versions/2.1.233/claude
+</code></pre>
+<p>回滚到老版本时同理——早期版本指到 <code>versions/&lt;版本&gt;</code>，新版本指到
+<code>versions/&lt;版本&gt;/claude</code>，<strong>两者不能混</strong>。</p>
+<h2 id="升级失败不会失去可用版本">升级失败不会失去可用版本</h2>
+<p>老版本仍留在 <code>versions/</code> 下，随时切回去：</p>
+<pre><code class="language-bash">ls ~/.local/share/claude/versions/     # 看有哪些版本
+ln -sfn ~/.local/share/claude/versions/&lt;老版本&gt;/claude ~/.local/bin/claude
+</code></pre>
+<p>所以升级失败时<strong>别急着重装</strong>，先切回去恢复可用状态，再慢慢查。</p>
+<p>另外，<strong>改软链不影响已经在运行的会话</strong>，需要重启 Claude Code 才生效。</p>
+<hr />
+<p>由 <a href="https://www.code2ai.codes/">Code2AI</a> 维护 · MIT License</p>
+</main>
+<footer><div class="wrap">
+<p>本手册开源在 <a href="https://github.com/code2ai-codes/claude-code-china-guide">GitHub</a>（MIT），欢迎提 issue 和 PR 纠错。
+由 <a href="https://www.code2ai.codes/">Code2AI（code2ai.codes）</a> 维护——我们自己做 Claude Code 接入服务，
+所以手册里所有验证方法都写成对任何一家都适用的形式，包括拿它来验我们。</p>
+</div></footer>
+</body>
+</html>

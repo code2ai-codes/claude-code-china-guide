@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>常见报错排查 · claude-code-china-guide</title>
+<meta name="description" content="实际会撞上的几类报错，每个都给了可直接跑的诊断命令和明确的判断依据。 安装问题见 install.md，端点配置见 configuration.md， 升级卡住见 upgrade.md。">
+<link rel="canonical" href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常见报错排查 · claude-code-china-guide">
+<meta property="og:description" content="实际会撞上的几类报错，每个都给了可直接跑的诊断命令和明确的判断依据。 安装问题见 install.md，端点配置见 configuration.md， 升级卡住见 upgrade.md。">
+<meta property="og:url" content="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">
+<meta property="og:locale" content="zh_CN">
+<style>
+:root{--fg:#1a1a1a;--dim:#57606a;--line:#d8dee4;--bg:#fff;--code:#f6f8fa;--link:#0969da}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);margin-bottom:32px}
+header .wrap{padding-top:18px;padding-bottom:14px}
+.brand{font-weight:600;font-size:15px;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--dim);font-weight:400}
+nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none}
+nav a:hover,nav a.on{color:var(--link)}
+nav a.on{font-weight:600}
+h1{font-size:30px;line-height:1.35;margin:0 0 20px}
+h2{font-size:22px;margin:38px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 10px}
+a{color:var(--link)}
+p,li{overflow-wrap:break-word}
+code{background:var(--code);padding:.15em .4em;border-radius:4px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:6px;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+blockquote{margin:18px 0;padding:2px 16px;border-left:3px solid var(--line);color:var(--dim)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:14px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media(max-width:600px){h1{font-size:25px}body{font-size:15.5px}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html#article",
+      "headline": "常见报错排查",
+      "name": "常见报错排查",
+      "description": "实际会撞上的几类报错，每个都给了可直接跑的诊断命令和明确的判断依据。 安装问题见 install.md，端点配置见 configuration.md， 升级卡住见 upgrade.md。",
+      "inLanguage": "zh-CN",
+      "url": "https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html",
+      "wordCount": 3891,
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html"
+      },
+      "author": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "publisher": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.code2ai.codes/#organization",
+      "name": "Code2AI",
+      "url": "https://www.code2ai.codes/",
+      "description": "面向国内开发者的 Claude Code 接入网关，域名 code2ai.codes。"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="https://code2ai-codes.github.io/claude-code-china-guide/">claude-code-china-guide <span>· Code2AI 维护的开源手册</span></a>
+<nav><a href="https://code2ai-codes.github.io/claude-code-china-guide/">首页</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/getting-started.html">从零到跑通</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/install.html">安装</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/configuration.html">端点配置</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html" class="on">排错</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">网络问题</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">升级</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/third-party-services.html">接入服务五类</a></nav>
+</div></header>
+<main class="wrap">
+<h1>常见报错排查</h1>
+<blockquote>
+<p>实际会撞上的几类报错，每个都给了可直接跑的诊断命令和明确的判断依据。</p>
+<p>安装问题见 <a href="install.html"><code>install.md</code></a>，端点配置见 <a href="configuration.html"><code>configuration.md</code></a>，
+升级卡住见 <a href="upgrade.html"><code>upgrade.md</code></a>。</p>
+</blockquote>
+<h2 id="先分清是哪一层">先分清是哪一层</h2>
+<pre><code class="language-bash">curl -sI -m 10 https://registry.npmjs.org/@anthropic-ai/claude-code | head -1   # 安装源
+curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1                  # API 端点
+</code></pre>
+<p>安装、请求、升级依赖三个<strong>互相独立</strong>的服务，
+先确认是哪一层出问题，再往下查——这一步能省掉大量无效尝试。</p>
+<h2 id="is-a-directory"><code>Is a directory</code></h2>
+<pre><code class="language-text">/home/用户名/.local/bin/claude: Is a directory
+</code></pre>
+<p>软链指到了版本目录而不是二进制文件。
+完整成因和两种目录布局的区别见 <a href="upgrade.html#软链必须指到二进制文件本身"><code>upgrade.md</code></a>。</p>
+<p>先看软链指向哪儿：</p>
+<pre><code class="language-bash">ls -la ~/.local/bin/claude
+</code></pre>
+<h2 id="请求全部超时但-curl-直连端点是通的">请求全部超时，但 curl 直连端点是通的</h2>
+<p>先检查 shell 里有没有残留的网络相关环境变量。这类变量一旦指向一个当前环境里
+<strong>不存在的地址</strong>，所有请求都会先撞一次超时才失败——现象就是「什么都慢、什么都失败」，
+但单独用 curl 测端点却是好的。</p>
+<pre><code class="language-bash">env | grep -iE &quot;proxy|PROXY&quot;        # 看有没有
+</code></pre>
+<p>如果有，且你并不需要它们：</p>
+<pre><code class="language-bash">unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
+claude --version
+</code></pre>
+<p>写脚本调用 API 时，最好在程序里直接把这几个变量摘掉——
+<strong>你要测的是端点，不是本机的网络配置</strong>：</p>
+<pre><code class="language-python">import os
+for k in (&quot;http_proxy&quot;, &quot;https_proxy&quot;, &quot;HTTP_PROXY&quot;, &quot;HTTPS_PROXY&quot;,
+          &quot;all_proxy&quot;, &quot;ALL_PROXY&quot;):
+    os.environ.pop(k, None)
+</code></pre>
+<h3 id="wsl-里要特别注意的一点">WSL 里要特别注意的一点</h3>
+<p><strong>WSL 和 Windows 是两套独立的网络栈。</strong> <code>.bashrc</code> 里写的 <code>127.0.0.1:某端口</code>，
+在 WSL 里指的是 WSL 自己的回环地址，<strong>不是 Windows 侧的同名端口</strong>——
+如果那个端口只在 Windows 上监听，WSL 里就是连不通的。</p>
+<pre><code class="language-bash">curl -sI --max-time 3 http://127.0.0.1:端口号 || echo &quot;该端口在 WSL 内不可用&quot;
+</code></pre>
+<p>结论：WSL 里跑的命令通常直接走默认网络即可。
+配了不可用的地址反而让每个请求都先超时一轮。</p>
+<h2 id="401--403"><code>401</code> / <code>403</code></h2>
+<p>密钥错误或已失效。<strong>先用 curl 单独验证</strong>，把客户端因素排除掉
+（命令见 <a href="configuration.html#验证端点是否真的通了"><code>configuration.md</code></a>）。</p>
+<h3 id="403-要看响应体不要只看状态码">403 要看响应体，不要只看状态码</h3>
+<p>403 可能来自三个完全不同的地方，处理方式毫无关系：</p>
+<table>
+<thead>
+<tr>
+<th>响应体长什么样</th>
+<th>真正的原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>纯文本 <code>error code: 1010</code>，或一整页 HTML</td>
+<td><strong>WAF / CDN 拦截</strong>，跟你的密钥无关</td>
+</tr>
+<tr>
+<td><code>{"error":{"type":"authentication_error",...}}</code></td>
+<td>鉴权真的失败了</td>
+</tr>
+<tr>
+<td><code>{"error":{"type":"permission_error",...}}</code></td>
+<td>密钥有效，但没有这个权限</td>
+</tr>
+</tbody>
+</table>
+<p>第一种最容易误判——<strong>自己写脚本时尤其常见</strong>。<code>urllib</code> 默认发
+<code>Python-urllib/3.x</code>、<code>requests</code> 默认发 <code>python-requests/2.x</code>，
+CDN 的 WAF 会直接拒掉这类特征明显的客户端签名，返回的 403 和「密钥不对」长得一样。</p>
+<p>控制变量确认（其余全固定，只改 UA）：</p>
+<pre><code class="language-python">import os, json, urllib.request, urllib.error
+
+BODY = json.dumps({&quot;model&quot;: &quot;claude-sonnet-5&quot;, &quot;max_tokens&quot;: 8,
+                   &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;hi&quot;}]}).encode()
+
+def go(ua):
+    h = {&quot;content-type&quot;: &quot;application/json&quot;,
+         &quot;x-api-key&quot;: os.environ[&quot;ANTHROPIC_AUTH_TOKEN&quot;],
+         &quot;anthropic-version&quot;: &quot;2023-06-01&quot;}
+    if ua:
+        h[&quot;user-agent&quot;] = ua
+    req = urllib.request.Request(
+        os.environ[&quot;ANTHROPIC_BASE_URL&quot;] + &quot;/v1/messages&quot;,
+        data=BODY, headers=h, method=&quot;POST&quot;)
+    try:
+        return f&quot;HTTP {urllib.request.urlopen(req, timeout=30).status}&quot;
+    except urllib.error.HTTPError as e:
+        return f&quot;HTTP {e.code}  body: {e.read()[:60].decode('utf-8','ignore')}&quot;
+
+print(&quot;默认 UA:&quot;, go(None))
+print(&quot;普通 UA:&quot;, go(&quot;my-tool/1.0&quot;))
+</code></pre>
+<p>一行 header 的差别。修复就是给你的客户端一个正常的 UA——
+建议<strong>报上工具自己的名字</strong>而不是伪装成浏览器，HTTP 规范里 UA 本来就是用于标识客户端的。</p>
+<h2 id="404但配置看着都对"><code>404</code>，但配置看着都对</h2>
+<p><code>ANTHROPIC_BASE_URL</code> 里重复写了 <code>/v1/messages</code>。
+多数客户端会自己补这一段，于是实际路径变成 <code>/v1/messages/v1/messages</code>。</p>
+<p>判别方法是看<strong>客户端最后拼出来的完整 URL</strong>，不是看你配了什么。
+详见 <a href="configuration.html#base_url-的路径规则"><code>configuration.md</code></a>。</p>
+<h2 id="temperature-is-deprecated-for-this-model"><code>temperature is deprecated for this model</code></h2>
+<p>Claude 5 家族等新模型已弃用 <code>temperature</code> 参数，请求里带上会直接 400。
+自己写脚本调用时去掉即可；用 Claude Code CLI 不会遇到这个。</p>
+<h2 id="claude---version-正常但一启动就报错"><code>claude --version</code> 正常但一启动就报错</h2>
+<p>说明二进制没问题，是配置或网络层。按顺序：</p>
+<ol>
+<li><code>env | grep -i anthropic</code> —— 环境变量对不对</li>
+<li>用 curl 直接打端点 —— 把客户端因素排除掉</li>
+<li><code>env | grep -i proxy</code> —— 有没有残留的代理变量</li>
+</ol>
+<h2 id="一个通用原则">一个通用原则</h2>
+<p>排查这类问题时，<strong>故障现象出现的位置，和故障原因所在的位置，经常不是同一个地方</strong>——
+报错在你的客户端里，原因在 CDN、在环境变量、在配置字符串里。</p>
+<p>所以动手改之前，先建两个对照组：</p>
+<table>
+<thead>
+<tr>
+<th>对照组</th>
+<th>怎么做</th>
+<th>能排除什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>换客户端</strong></td>
+<td>同一个请求用 curl 再打一次</td>
+<td>区分「端点问题」和「客户端问题」</td>
+</tr>
+<tr>
+<td><strong>去掉凭证</strong></td>
+<td>故意不带密钥打一次</td>
+<td>确认端点活着，看清它的错误结构长什么样</td>
+</tr>
+</tbody>
+</table>
+<p>第二条最被低估。不带凭证打一次，一个请求同时告诉你三件事：
+端点是活的、它的错误响应是不是标准 JSON 结构、它接受哪些鉴权头（通常直接写在报错里）。</p>
+<pre><code class="language-bash">curl -sS -X POST &quot;$ANTHROPIC_BASE_URL/v1/messages&quot; \
+  -H 'content-type: application/json' -d '{}'
+</code></pre>
+<p>两条加起来不到一分钟，能省掉一下午。</p>
+<hr />
+<p>由 <a href="https://www.code2ai.codes/">Code2AI</a> 维护 · MIT License</p>
+</main>
+<footer><div class="wrap">
+<p>本手册开源在 <a href="https://github.com/code2ai-codes/claude-code-china-guide">GitHub</a>（MIT），欢迎提 issue 和 PR 纠错。
+由 <a href="https://www.code2ai.codes/">Code2AI（code2ai.codes）</a> 维护——我们自己做 Claude Code 接入服务，
+所以手册里所有验证方法都写成对任何一家都适用的形式，包括拿它来验我们。</p>
+</div></footer>
+</body>
+</html>

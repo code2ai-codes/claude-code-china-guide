@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>网络层问题：超时、卡死、时通时不通 · claude-code-china-guide</title>
+<meta name="description" content="这一类问题最难查，因为报错发生的位置和原因所在的位置往往不是一个地方—— 客户端报超时，原因可能在 IPv6 路由、在 MTU、在一个你早就忘了的环境变量。 这份文档按「最容易误判」的顺序排列，每一项都给了判别命令。 基础排错见 troubleshooting.md。">
+<link rel="canonical" href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络层问题：超时、卡死、时通时不通 · claude-code-china-guide">
+<meta property="og:description" content="这一类问题最难查，因为报错发生的位置和原因所在的位置往往不是一个地方—— 客户端报超时，原因可能在 IPv6 路由、在 MTU、在一个你早就忘了的环境变量。 这份文档按「最容易误判」的顺序排列，每一项都给了判别命令。 基础排错见 troubleshooting.md。">
+<meta property="og:url" content="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">
+<meta property="og:locale" content="zh_CN">
+<style>
+:root{--fg:#1a1a1a;--dim:#57606a;--line:#d8dee4;--bg:#fff;--code:#f6f8fa;--link:#0969da}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);margin-bottom:32px}
+header .wrap{padding-top:18px;padding-bottom:14px}
+.brand{font-weight:600;font-size:15px;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--dim);font-weight:400}
+nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none}
+nav a:hover,nav a.on{color:var(--link)}
+nav a.on{font-weight:600}
+h1{font-size:30px;line-height:1.35;margin:0 0 20px}
+h2{font-size:22px;margin:38px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 10px}
+a{color:var(--link)}
+p,li{overflow-wrap:break-word}
+code{background:var(--code);padding:.15em .4em;border-radius:4px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:6px;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+blockquote{margin:18px 0;padding:2px 16px;border-left:3px solid var(--line);color:var(--dim)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:14px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media(max-width:600px){h1{font-size:25px}body{font-size:15.5px}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html#article",
+      "headline": "网络层问题：超时、卡死、时通时不通",
+      "name": "网络层问题：超时、卡死、时通时不通",
+      "description": "这一类问题最难查，因为报错发生的位置和原因所在的位置往往不是一个地方—— 客户端报超时，原因可能在 IPv6 路由、在 MTU、在一个你早就忘了的环境变量。 这份文档按「最容易误判」的顺序排列，每一项都给了判别命令。 基础排错见 troubleshooting.md。",
+      "inLanguage": "zh-CN",
+      "url": "https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html",
+      "wordCount": 3237,
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html"
+      },
+      "author": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "publisher": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.code2ai.codes/#organization",
+      "name": "Code2AI",
+      "url": "https://www.code2ai.codes/",
+      "description": "面向国内开发者的 Claude Code 接入网关，域名 code2ai.codes。"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="https://code2ai-codes.github.io/claude-code-china-guide/">claude-code-china-guide <span>· Code2AI 维护的开源手册</span></a>
+<nav><a href="https://code2ai-codes.github.io/claude-code-china-guide/">首页</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/getting-started.html">从零到跑通</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/install.html">安装</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/configuration.html">端点配置</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">排错</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html" class="on">网络问题</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">升级</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/third-party-services.html">接入服务五类</a></nav>
+</div></header>
+<main class="wrap">
+<h1>网络层问题：超时、卡死、时通时不通</h1>
+<blockquote>
+<p>这一类问题最难查，因为<strong>报错发生的位置和原因所在的位置往往不是一个地方</strong>——
+客户端报超时，原因可能在 IPv6 路由、在 MTU、在一个你早就忘了的环境变量。</p>
+<p>这份文档按「最容易误判」的顺序排列，每一项都给了判别命令。
+基础排错见 <a href="troubleshooting.html"><code>troubleshooting.md</code></a>。</p>
+</blockquote>
+<h2 id="一小请求正常一发长内容就卡死--mtu-黑洞">一、小请求正常，一发长内容就卡死 —— MTU 黑洞</h2>
+<p><strong>这是最难自己想到的一个。</strong> 典型表现：</p>
+<ul>
+<li><code>claude --version</code> 正常</li>
+<li>curl 打个 <code>hi</code> 正常返回</li>
+<li>一旦贴进去几百行代码、或者对话轮次多了，请求<strong>挂在那里不动</strong>，最后超时</li>
+<li>重试还是同一个位置卡住，看起来像"服务端处理不过来"</li>
+</ul>
+<p>原因是链路上某一跳的 MTU 比你本机小，而<strong>路径 MTU 发现（PMTUD）所依赖的
+ICMP 报文被中间设备丢弃了</strong>。小包能过，超过阈值的大包直接进黑洞，
+两边都不会收到任何错误——所以表现是"卡死"而不是"报错"。</p>
+<p>VPN、部分家用路由、某些云厂商的隧道网络都可能造成这个。</p>
+<h3 id="判别">判别</h3>
+<p>用逐步增大的包探测，找到断点：</p>
+<pre><code class="language-bash"># Linux / macOS：-M do 禁止分片，-s 指定负载大小
+for s in 1200 1300 1400 1472; do
+  printf &quot;%5d: &quot; $s
+  ping -c1 -W2 -M do -s $s api.anthropic.com &gt;/dev/null 2&gt;&amp;1 \
+    &amp;&amp; echo ok || echo &quot;FAIL ← 超过这个尺寸就不通了&quot;
+done
+</code></pre>
+<p>macOS 上参数不同：</p>
+<pre><code class="language-bash">ping -c1 -D -s 1400 api.anthropic.com
+</code></pre>
+<p><strong>判读</strong>：1200 通、1400 不通，说明路径 MTU 在两者之间。
+正常以太网是 1500（负载 1472 + 28 字节头），PPPoE 常见 1492，
+各类隧道再减 20～80 不等。</p>
+<h3 id="处理">处理</h3>
+<p>把接口 MTU 调到探测出来的安全值以下：</p>
+<pre><code class="language-bash"># Linux，临时生效，重启后失效
+sudo ip link set dev eth0 mtu 1400
+
+# WSL 里网卡通常叫 eth0，先确认
+ip -brief link
+</code></pre>
+<p>如果是 VPN 或代理软件造成的，优先在那一侧调，别改物理网卡。</p>
+<p>⚠️ <strong>改 MTU 会影响这台机器的所有网络流量</strong>，先用探测确认真是 MTU 问题再动，
+不要当成万能解药。</p>
+<h2 id="二ipv6-线路不通但系统优先走-ipv6">二、IPv6 线路不通，但系统优先走 IPv6</h2>
+<p>表现是"时通时不通"或者"一直连不上，但别人都正常"。</p>
+<p>多数系统在同时拿到 A 和 AAAA 记录时优先尝试 IPv6。如果本地有 IPv6 地址
+但那条路由实际不通，每个请求都要先等 IPv6 超时才回退到 IPv4——
+轻则慢得离谱，重则直接失败。</p>
+<h3 id="判别_1">判别</h3>
+<p>分别用两个协议族打一次，对比：</p>
+<pre><code class="language-bash">curl -4 -sI -m 10 https://api.anthropic.com/v1/messages | head -1   # 强制 IPv4
+curl -6 -sI -m 10 https://api.anthropic.com/v1/messages | head -1   # 强制 IPv6
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-4</code> 通、<code>-6</code> 超时</td>
+<td><strong>IPv6 路由不通</strong>，需要让系统优先走 IPv4</td>
+</tr>
+<tr>
+<td>两个都通</td>
+<td>不是这个问题</td>
+</tr>
+<tr>
+<td>两个都不通</td>
+<td>是端点或更基础的网络问题</td>
+</tr>
+</tbody>
+</table>
+<p>看解析结果：</p>
+<pre><code class="language-bash">getent ahosts api.anthropic.com     # Linux
+dig +short AAAA api.anthropic.com   # 只看 IPv6 记录
+</code></pre>
+<h3 id="处理_1">处理</h3>
+<p>Linux 上调整地址选择策略，让 IPv4 优先：</p>
+<pre><code class="language-bash"># 查看当前策略
+getent ahosts api.anthropic.com | head
+
+# /etc/gai.conf 里取消这一行的注释即可让 IPv4 优先
+# precedence ::ffff:0:0/96  100
+sudo sed -i 's/^#precedence ::ffff:0:0\/96  100/precedence ::ffff:0:0\/96  100/' /etc/gai.conf
+</code></pre>
+<p>单条命令临时验证可以直接用 <code>curl -4</code>。</p>
+<h2 id="三代理环境变量一个早就忘了的-export">三、代理环境变量：一个早就忘了的 export</h2>
+<p>详见 <a href="troubleshooting.html#请求全部超时但-curl-直连端点是通的"><code>troubleshooting.md</code></a>。
+简述：变量指向一个当前环境里不存在的地址时，<strong>每个请求都先撞一次超时</strong>，
+现象是"什么都慢、什么都失败"，但单独 curl 测端点却是好的。</p>
+<pre><code class="language-bash">env | grep -iE &quot;proxy|PROXY&quot;
+</code></pre>
+<h3 id="wsl-的特殊情况">WSL 的特殊情况</h3>
+<p><strong>WSL 和 Windows 是两套独立的网络栈。</strong> <code>.bashrc</code> 里的 <code>127.0.0.1:某端口</code>
+在 WSL 里指的是 WSL 自己的回环，不是 Windows 侧的同名端口——
+如果代理只在 Windows 上监听，WSL 里就是连不通的。</p>
+<pre><code class="language-bash">curl -sI --max-time 3 http://127.0.0.1:端口号 || echo &quot;该端口在 WSL 内不可用&quot;
+</code></pre>
+<h2 id="四配置写进去了--当前-shell-生效">四、配置写进去了 ≠ 当前 shell 生效</h2>
+<p>不是网络问题，但表现常常被当成网络问题（"改了地址还是连旧的"）。</p>
+<pre><code class="language-bash">env | grep -i anthropic     # 当前 shell 里实际是什么值
+grep -rn &quot;ANTHROPIC&quot; ~/.bashrc ~/.zshrc 2&gt;/dev/null   # 配置文件里写的是什么
+</code></pre>
+<p>两者不一致时，<strong>以当前 shell 里的为准</strong>——命令行 export 过的值优先级高于配置文件，
+<code>source ~/.bashrc</code> 也覆盖不回来。开个新终端，或手动重新 export。</p>
+<h2 id="一个通用的排查顺序">一个通用的排查顺序</h2>
+<pre><code class="language-text">本机环境变量  →  DNS 解析  →  协议族（v4/v6）  →  MTU  →  端点本身
+</code></pre>
+<p><strong>从最靠近自己的一层开始查</strong>，因为越靠近自己的越容易验证、也越容易被忽略。
+顺序反了就会在最后一层上耗掉一下午——而问题其实在第一层。</p>
+<p>每一层的验证成本都不到一分钟：</p>
+<pre><code class="language-bash">env | grep -iE &quot;proxy|anthropic&quot;                          # 环境变量
+getent ahosts api.anthropic.com | head -3                 # DNS
+curl -4 -sI -m 10 https://api.anthropic.com/v1/messages | head -1   # 协议族
+ping -c1 -M do -s 1400 api.anthropic.com &gt;/dev/null &amp;&amp; echo mtu-ok  # MTU
+</code></pre>
+<hr />
+<p>由 <a href="https://www.code2ai.codes/">Code2AI</a> 维护 · MIT License</p>
+</main>
+<footer><div class="wrap">
+<p>本手册开源在 <a href="https://github.com/code2ai-codes/claude-code-china-guide">GitHub</a>（MIT），欢迎提 issue 和 PR 纠错。
+由 <a href="https://www.code2ai.codes/">Code2AI（code2ai.codes）</a> 维护——我们自己做 Claude Code 接入服务，
+所以手册里所有验证方法都写成对任何一家都适用的形式，包括拿它来验我们。</p>
+</div></footer>
+</body>
+</html>

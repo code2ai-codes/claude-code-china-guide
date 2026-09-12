@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>国内怎么用上 Claude Code：安装、端点配置与排错手册</title>
+<meta name="description" content="国内用 Claude Code 的完整手册：安装、ANTHROPIC_BASE_URL 端点配置、报错排查、网络问题与升级。每一步都给可直接复制的诊断命令和判断依据，不靠猜。开源 MIT。">
+<link rel="canonical" href="https://code2ai-codes.github.io/claude-code-china-guide/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="国内怎么用上 Claude Code：安装、端点配置与排错手册">
+<meta property="og:description" content="国内用 Claude Code 的完整手册：安装、ANTHROPIC_BASE_URL 端点配置、报错排查、网络问题与升级。每一步都给可直接复制的诊断命令和判断依据，不靠猜。开源 MIT。">
+<meta property="og:url" content="https://code2ai-codes.github.io/claude-code-china-guide/">
+<meta property="og:locale" content="zh_CN">
+<style>
+:root{--fg:#1a1a1a;--dim:#57606a;--line:#d8dee4;--bg:#fff;--code:#f6f8fa;--link:#0969da}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);margin-bottom:32px}
+header .wrap{padding-top:18px;padding-bottom:14px}
+.brand{font-weight:600;font-size:15px;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--dim);font-weight:400}
+nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none}
+nav a:hover,nav a.on{color:var(--link)}
+nav a.on{font-weight:600}
+h1{font-size:30px;line-height:1.35;margin:0 0 20px}
+h2{font-size:22px;margin:38px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 10px}
+a{color:var(--link)}
+p,li{overflow-wrap:break-word}
+code{background:var(--code);padding:.15em .4em;border-radius:4px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:6px;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+blockquote{margin:18px 0;padding:2px 16px;border-left:3px solid var(--line);color:var(--dim)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:14px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media(max-width:600px){h1{font-size:25px}body{font-size:15.5px}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://code2ai-codes.github.io/claude-code-china-guide/#article",
+      "headline": "国内怎么用上 Claude Code：安装、端点配置与排错手册",
+      "name": "国内怎么用上 Claude Code：安装、端点配置与排错手册",
+      "description": "国内用 Claude Code 的完整手册：安装、ANTHROPIC_BASE_URL 端点配置、报错排查、网络问题与升级。每一步都给可直接复制的诊断命令和判断依据，不靠猜。开源 MIT。",
+      "inLanguage": "zh-CN",
+      "url": "https://code2ai-codes.github.io/claude-code-china-guide/",
+      "wordCount": 6365,
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://code2ai-codes.github.io/claude-code-china-guide/"
+      },
+      "author": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "publisher": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.code2ai.codes/#organization",
+      "name": "Code2AI",
+      "url": "https://www.code2ai.codes/",
+      "description": "面向国内开发者的 Claude Code 接入网关，域名 code2ai.codes。"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="https://code2ai-codes.github.io/claude-code-china-guide/">claude-code-china-guide <span>· Code2AI 维护的开源手册</span></a>
+<nav><a href="https://code2ai-codes.github.io/claude-code-china-guide/" class="on">首页</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/getting-started.html">从零到跑通</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/install.html">安装</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/configuration.html">端点配置</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">排错</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">网络问题</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">升级</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/third-party-services.html">接入服务五类</a></nav>
+</div></header>
+<main class="wrap">
+<h1>国内怎么用上 Claude Code：安装、端点配置与排错手册</h1>
+<p><strong><code>claude-code-china-guide</code>——Claude Code 在国内环境下的安装、配置与排错手册。</strong> 每个问题都给了可直接复制的诊断命令，
+判断依据写明，不靠猜。</p>
+<p>Claude Code 出问题的地方几乎都能归到三件事：<strong>装不上、装上了请求失败、用得好好的升不了级</strong>。
+这三件事看着像同一个问题，其实依赖三个<strong>互相独立</strong>的服务：</p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>依赖的服务</th>
+<th>出问题的表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安装</td>
+<td>npm registry</td>
+<td>装不上、卡在下载</td>
+</tr>
+<tr>
+<td>请求</td>
+<td>API 端点</td>
+<td>401 / 403 / 404 / 全部超时</td>
+</tr>
+<tr>
+<td>升级</td>
+<td>官方发布源</td>
+<td><code>claude update</code> 卡住不动</td>
+</tr>
+</tbody>
+</table>
+<p>彼此不影响，所以经常出现「装好了但请求失败」「用得好好的但升级卡住」这类看似矛盾的情况。
+<strong>先分清是哪一层，再往下查</strong>——这一步能省掉大量无效尝试。</p>
+<blockquote>
+<p><strong>English TL;DR</strong> — A field manual for running Claude Code from mainland China:
+installation (npm vs native), pointing <code>ANTHROPIC_BASE_URL</code> at a custom endpoint,
+and diagnosing the errors you actually hit. Claude Code depends on three
+<em>independent</em> services — the npm registry (install), your API endpoint (requests),
+and the official release source (upgrade) — so failures in one look nothing like
+failures in another. Every section gives copy-pasteable diagnostic commands.
+See <a href="#english">English</a> below.</p>
+</blockquote>
+<h2 id="还没跑起来">还没跑起来？</h2>
+<p>从零开始装、配、跑通第一条命令，看 <a href="getting-started.html"><strong><code>docs/getting-started.md</code></strong></a>——三条路怎么选、两个环境变量怎么配、跑之前怎么自查，十来分钟。</p>
+<p>下面这份是给<strong>已经在用、某一步出了问题</strong>的人看的。</p>
+<h2 id="先花-10-秒定位">先花 10 秒定位</h2>
+<p>动手前先跑这两条：</p>
+<pre><code class="language-bash"># 1. 安装源响应情况
+curl -sI -m 10 https://registry.npmjs.org/@anthropic-ai/claude-code | head -1
+
+# 2. API 端点响应情况
+curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
+</code></pre>
+<p>结果直接决定你该看哪份文档：</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>卡在哪一层</th>
+<th>看哪里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 条超时</td>
+<td>安装源</td>
+<td><a href="install.html"><code>docs/install.md</code></a></td>
+</tr>
+<tr>
+<td>第 1 条正常、第 2 条超时</td>
+<td>端点配置</td>
+<td><a href="configuration.html"><code>docs/configuration.md</code></a></td>
+</tr>
+<tr>
+<td>两条都正常但 <code>claude</code> 报错</td>
+<td>安装方式或路径</td>
+<td><a href="troubleshooting.html"><code>docs/troubleshooting.md</code></a></td>
+</tr>
+<tr>
+<td><code>claude update</code> 卡住</td>
+<td>发布源</td>
+<td><a href="upgrade.html"><code>docs/upgrade.md</code></a></td>
+</tr>
+<tr>
+<td>还没选好接入方式</td>
+<td>——</td>
+<td><a href="third-party-services.html"><code>docs/third-party-services.md</code></a></td>
+</tr>
+<tr>
+<td>还没装过，从头开始</td>
+<td>——</td>
+<td><a href="getting-started.html"><code>docs/getting-started.md</code></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="按报错现象直接跳转">按报错现象直接跳转</h2>
+<table>
+<thead>
+<tr>
+<th>你遇到的现象</th>
+<th>去哪儿</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Is a directory</code></td>
+<td><a href="upgrade.html#软链必须指到二进制文件本身">升级 · 软链指向</a></td>
+</tr>
+<tr>
+<td>请求全部超时，但 curl 直连端点是通的</td>
+<td><a href="troubleshooting.html#请求全部超时但-curl-直连端点是通的">排错 · 残留代理变量</a></td>
+</tr>
+<tr>
+<td><strong>小请求正常，一发长内容就卡死</strong></td>
+<td><a href="network-issues.html#一小请求正常一发长内容就卡死--mtu-黑洞">网络 · MTU 黑洞</a></td>
+</tr>
+<tr>
+<td>时通时不通，或者慢得离谱</td>
+<td><a href="network-issues.html#二ipv6-线路不通但系统优先走-ipv6">网络 · IPv6 路由</a></td>
+</tr>
+<tr>
+<td><code>401</code> / <code>403</code></td>
+<td><a href="troubleshooting.html#401--403">排错 · 认证失败</a></td>
+</tr>
+<tr>
+<td><code>404</code>，但配置看着都对</td>
+<td><a href="configuration.html#base_url-的路径规则">配置 · base_url 路径规则</a></td>
+</tr>
+<tr>
+<td>改了配置文件还是连旧地址</td>
+<td><a href="network-issues.html#四配置写进去了--当前-shell-生效">网络 · 配置生效优先级</a></td>
+</tr>
+<tr>
+<td><code>temperature is deprecated for this model</code></td>
+<td><a href="troubleshooting.html#temperature-is-deprecated-for-this-model">排错 · 参数弃用</a></td>
+</tr>
+<tr>
+<td><code>claude update</code> 卡住不动最后超时</td>
+<td><a href="upgrade.html">升级 · 从镜像源取同一份二进制</a></td>
+</tr>
+<tr>
+<td>不知道自己装的是 npm 版还是 native 版</td>
+<td><a href="install.html#确认自己装的是哪种">安装 · 确认安装方式</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="文档">文档</h2>
+<ul>
+<li><a href="getting-started.html"><code>docs/getting-started.md</code></a>——<strong>从零到跑通</strong>：三条路的取舍、
+  两个环境变量、跑通前的两条自查命令、常用命令，以及卡住了该去哪份文档</li>
+<li><a href="install.html"><code>docs/install.md</code></a>——两种安装方式的取舍（npm / native）、镜像源、
+  验证安装是否成功</li>
+<li><a href="configuration.html"><code>docs/configuration.md</code></a>——用环境变量指定 API 端点，
+  临时生效与持久化的区别，以及 <code>base_url</code> 的路径规则（<code>404</code> 的头号原因）</li>
+<li><a href="troubleshooting.html"><code>docs/troubleshooting.md</code></a>——实际会撞上的报错：
+  认证失败、路径不对、请求全超时、WSL 的网络栈问题、参数弃用</li>
+<li><a href="network-issues.html"><code>docs/network-issues.md</code></a>——最难查的那一类：
+  <strong>MTU 黑洞</strong>（小请求正常、长内容卡死）、IPv6 路由不通、代理残留、
+  「配置写进去了但当前 shell 不生效」</li>
+<li><a href="upgrade.html"><code>docs/upgrade.md</code></a>——自动升级卡住时从镜像源取同一份二进制，
+  含一个会让人卡很久的目录布局坑</li>
+</ul>
+<h2 id="命令速查">命令速查</h2>
+<pre><code class="language-bash">claude --version                         # 查版本
+claude                                   # 在当前目录启动
+claude --help                            # 全部参数
+which claude &amp;&amp; ls -la $(which claude)   # 确认安装方式与软链指向
+env | grep -i proxy                      # 排查残留的网络环境变量
+env | grep -i anthropic                  # 确认端点环境变量
+ls ~/.local/share/claude/versions/       # 查看已安装的版本
+</code></pre>
+<h2 id="把这些检查自动化">把这些检查自动化</h2>
+<p>上面这些诊断都可以手工一条条跑——<strong>这份手册的目的就是让你不依赖任何工具也能查清楚</strong>，
+所有命令在官方端点和任何第三方网关上都一样用。</p>
+<p>如果想省事，Code2AI 有一个免费的终端助手 <code>c2a</code>，其中 <code>c2a doctor</code> 把十几项检查
+串成一条命令：CLI 在不在 PATH、配置有没有真写进去、环境变量在当前 shell 生不生效、
+密钥有效性与限额状态、IPv4/IPv6 可达性、MTU 黑洞、代理干扰，
+最后发一个真实请求做端到端验证。每个错误都带对应的修复命令。</p>
+<pre><code class="language-bash">curl -fsSL https://console.code2ai.codes/install.sh | bash
+c2a doctor
+</code></pre>
+<p>⚠️ 说清楚：<strong><code>c2a</code> 本身免费，但它「取密钥、写配置」那部分需要 Code2AI 订阅才有意义。</strong>
+纯排错的话，这份手册里的命令一个订阅都不需要。</p>
+<h2 id="关于-anthropic_base_url-填什么">关于 <code>ANTHROPIC_BASE_URL</code> 填什么</h2>
+<p>这取决于你的接入方式：用官方订阅就填官方地址；如果因为支付方式等原因走第三方网关，
+就填对方给的地址。<strong>客户端完全一样</strong>，都是官方原生的 Claude Code CLI，
+区别只在这两个环境变量——这也意味着换回来的成本是零，改两行配置的事。</p>
+<p><strong>这份手册的排错内容不依赖任何特定的接入服务</strong>，只讲怎么配、报错怎么查。</p>
+<hr />
+<h2 id="english">English</h2>
+<h3 id="what-this-is">What this is</h3>
+<p>A field manual for running Claude Code from mainland China. Every problem comes
+with copy-pasteable diagnostic commands and an explicit decision rule.</p>
+<p>Claude Code failures almost always fall into three buckets, and they depend on
+three <strong>independent</strong> services:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Depends on</th>
+<th>Typical symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Install</td>
+<td>npm registry</td>
+<td>Hangs during download</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>your API endpoint</td>
+<td>401 / 403 / 404 / everything times out</td>
+</tr>
+<tr>
+<td>Upgrade</td>
+<td>official release source</td>
+<td><code>claude update</code> hangs, then times out</td>
+</tr>
+</tbody>
+</table>
+<p>Because they are independent, "installed fine but requests fail" and "works fine
+but won't upgrade" are both normal and unrelated. <strong>Identify the layer first.</strong></p>
+<h3 id="10-second-triage">10-second triage</h3>
+<pre><code class="language-bash">curl -sI -m 10 https://registry.npmjs.org/@anthropic-ai/claude-code | head -1
+curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Layer</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1 times out</td>
+<td>install source</td>
+<td><a href="install.html"><code>docs/install.md</code></a></td>
+</tr>
+<tr>
+<td>#1 ok, #2 times out</td>
+<td>endpoint config</td>
+<td><a href="configuration.html"><code>docs/configuration.md</code></a></td>
+</tr>
+<tr>
+<td>both ok, <code>claude</code> still errors</td>
+<td>install path</td>
+<td><a href="troubleshooting.html"><code>docs/troubleshooting.md</code></a></td>
+</tr>
+<tr>
+<td><code>claude update</code> hangs</td>
+<td>release source</td>
+<td><a href="upgrade.html"><code>docs/upgrade.md</code></a></td>
+</tr>
+<tr>
+<td>nothing installed yet</td>
+<td>—</td>
+<td><a href="getting-started.html"><code>docs/getting-started.md</code></a></td>
+</tr>
+<tr>
+<td>small requests fine, long ones hang</td>
+<td><strong>path MTU / IPv6</strong></td>
+<td><a href="network-issues.html"><code>docs/network-issues.md</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>The last row is the one people rarely guess: if an intermediate hop has a smaller
+MTU and the ICMP needed for path-MTU discovery is being dropped, small packets get
+through and large ones vanish silently — so it looks like the server hanging, not
+a network error.</p>
+<h3 id="note-on-anthropic_base_url">Note on <code>ANTHROPIC_BASE_URL</code></h3>
+<p>Point it at the official API, or at whatever gateway you use. The client is
+identical either way — it is the stock Claude Code CLI, and the only difference
+is two environment variables, so switching back costs nothing.</p>
+<p><strong>This repository does not recommend any particular access service.</strong> It only
+covers configuration and diagnostics.</p>
+<hr />
+<p>由 <a href="https://www.code2ai.codes/">Code2AI</a> 维护 · MIT License</p>
+</main>
+<footer><div class="wrap">
+<p>本手册开源在 <a href="https://github.com/code2ai-codes/claude-code-china-guide">GitHub</a>（MIT），欢迎提 issue 和 PR 纠错。
+由 <a href="https://www.code2ai.codes/">Code2AI（code2ai.codes）</a> 维护——我们自己做 Claude Code 接入服务，
+所以手册里所有验证方法都写成对任何一家都适用的形式，包括拿它来验我们。</p>
+</div></footer>
+</body>
+</html>

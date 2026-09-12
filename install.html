@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>安装：两种方式，选错了后面很痛苦 · claude-code-china-guide</title>
+<meta name="description" content="Claude Code 有两种安装形态，区别不只是命令不同——后续的升级方式完全不一样。 这份文档讲怎么选、怎么装、怎么确认自己装的是哪种。 升级问题见 upgrade.md，端点配置见 configuration.md。">
+<link rel="canonical" href="https://code2ai-codes.github.io/claude-code-china-guide/install.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安装：两种方式，选错了后面很痛苦 · claude-code-china-guide">
+<meta property="og:description" content="Claude Code 有两种安装形态，区别不只是命令不同——后续的升级方式完全不一样。 这份文档讲怎么选、怎么装、怎么确认自己装的是哪种。 升级问题见 upgrade.md，端点配置见 configuration.md。">
+<meta property="og:url" content="https://code2ai-codes.github.io/claude-code-china-guide/install.html">
+<meta property="og:locale" content="zh_CN">
+<style>
+:root{--fg:#1a1a1a;--dim:#57606a;--line:#d8dee4;--bg:#fff;--code:#f6f8fa;--link:#0969da}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);margin-bottom:32px}
+header .wrap{padding-top:18px;padding-bottom:14px}
+.brand{font-weight:600;font-size:15px;text-decoration:none;color:var(--fg)}
+.brand span{color:var(--dim);font-weight:400}
+nav{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none}
+nav a:hover,nav a.on{color:var(--link)}
+nav a.on{font-weight:600}
+h1{font-size:30px;line-height:1.35;margin:0 0 20px}
+h2{font-size:22px;margin:38px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 10px}
+a{color:var(--link)}
+p,li{overflow-wrap:break-word}
+code{background:var(--code);padding:.15em .4em;border-radius:4px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:6px;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:18px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+blockquote{margin:18px 0;padding:2px 16px;border-left:3px solid var(--line);color:var(--dim)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:20px 0 40px;font-size:14px;color:var(--dim)}
+footer a{color:var(--dim)}
+@media(max-width:600px){h1{font-size:25px}body{font-size:15.5px}}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://code2ai-codes.github.io/claude-code-china-guide/install.html#article",
+      "headline": "安装：两种方式，选错了后面很痛苦",
+      "name": "安装：两种方式，选错了后面很痛苦",
+      "description": "Claude Code 有两种安装形态，区别不只是命令不同——后续的升级方式完全不一样。 这份文档讲怎么选、怎么装、怎么确认自己装的是哪种。 升级问题见 upgrade.md，端点配置见 configuration.md。",
+      "inLanguage": "zh-CN",
+      "url": "https://code2ai-codes.github.io/claude-code-china-guide/install.html",
+      "wordCount": 1618,
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://code2ai-codes.github.io/claude-code-china-guide/install.html"
+      },
+      "author": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "publisher": {
+        "@id": "https://www.code2ai.codes/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.code2ai.codes/#organization",
+      "name": "Code2AI",
+      "url": "https://www.code2ai.codes/",
+      "description": "面向国内开发者的 Claude Code 接入网关，域名 code2ai.codes。"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="https://code2ai-codes.github.io/claude-code-china-guide/">claude-code-china-guide <span>· Code2AI 维护的开源手册</span></a>
+<nav><a href="https://code2ai-codes.github.io/claude-code-china-guide/">首页</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/getting-started.html">从零到跑通</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/install.html" class="on">安装</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/configuration.html">端点配置</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/troubleshooting.html">排错</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/network-issues.html">网络问题</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/upgrade.html">升级</a><a href="https://code2ai-codes.github.io/claude-code-china-guide/third-party-services.html">接入服务五类</a></nav>
+</div></header>
+<main class="wrap">
+<h1>安装：两种方式，选错了后面很痛苦</h1>
+<blockquote>
+<p>Claude Code 有两种安装形态，区别不只是命令不同——<strong>后续的升级方式完全不一样</strong>。
+这份文档讲怎么选、怎么装、怎么确认自己装的是哪种。</p>
+<p>升级问题见 <a href="upgrade.html"><code>upgrade.md</code></a>，端点配置见 <a href="configuration.html"><code>configuration.md</code></a>。</p>
+</blockquote>
+<h2 id="npm-安装">npm 安装</h2>
+<pre><code class="language-bash">npm install -g @anthropic-ai/claude-code
+</code></pre>
+<p>官方源响应慢时换国内镜像：</p>
+<pre><code class="language-bash">npm install -g @anthropic-ai/claude-code --registry=https://registry.npmmirror.com
+</code></pre>
+<h2 id="native-安装推荐">native 安装（推荐）</h2>
+<pre><code class="language-bash">curl -fsSL https://claude.ai/install.sh | bash
+</code></pre>
+<p>装完后的结构：</p>
+<pre><code class="language-text">~/.local/bin/claude                     # 软链
+~/.local/share/claude/versions/&lt;版本&gt;    # 实际二进制
+</code></pre>
+<h3 id="为什么推荐-native">为什么推荐 native</h3>
+<p><strong>一是不依赖 Node 环境。</strong> npm 版需要本机有可用的 Node，版本过低或全局目录权限不对都会
+出问题，而这类问题的报错信息往往指向别处，很难一眼看出根因。</p>
+<p><strong>二是多版本共存。</strong> native 版每个版本单独占一个目录，切换只是改一个软链，
+升级失败可以立刻切回去——这一点在自动升级不稳定时很重要。</p>
+<p><strong>三是启动更快</strong>，省掉了 Node 的启动开销。</p>
+<p>代价是它的自动升级依赖官方发布源，响应不稳定时会卡住。
+<a href="upgrade.html"><code>upgrade.md</code></a> 给了用 npm 镜像源手工升级的方法，补上这个短板。</p>
+<h2 id="确认自己装的是哪种">确认自己装的是哪种</h2>
+<pre><code class="language-bash">which claude
+ls -la $(which claude)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>输出指向</th>
+<th>安装方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.local/share/claude/versions/...</code></td>
+<td>native</td>
+</tr>
+<tr>
+<td><code>node_modules/...</code></td>
+<td>npm</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ <strong>两种并存时 PATH 顺序决定实际调用哪个</strong>，很容易混淆——建议只留一个。
+要从 npm 版换到 native 版：</p>
+<pre><code class="language-bash">npm uninstall -g @anthropic-ai/claude-code
+curl -fsSL https://claude.ai/install.sh | bash
+which claude          # 确认软链指向对了
+</code></pre>
+<h2 id="验证安装">验证安装</h2>
+<pre><code class="language-bash">claude --version
+</code></pre>
+<p>能输出版本号（例如 <code>2.1.238</code>）就说明二进制本身没问题，
+<strong>后面的问题都在网络或配置层面</strong>，不用再怀疑安装。</p>
+<p>如果 <code>claude --version</code> 正常但一启动就报错，按这个顺序查：</p>
+<ol>
+<li><code>env | grep -i anthropic</code> —— 环境变量对不对（见 <a href="configuration.html"><code>configuration.md</code></a>）</li>
+<li>用 curl 直接打端点 —— 把客户端因素排除掉</li>
+<li><code>env | grep -i proxy</code> —— 有没有残留的代理变量（见 <a href="troubleshooting.html"><code>troubleshooting.md</code></a>）</li>
+</ol>
+<p>这三步能覆盖绝大多数情况。</p>
+<hr />
+<p>由 <a href="https://www.code2ai.codes/">Code2AI</a> 维护 · MIT License</p>
+</main>
+<footer><div class="wrap">
+<p>本手册开源在 <a href="https://github.com/code2ai-codes/claude-code-china-guide">GitHub</a>（MIT），欢迎提 issue 和 PR 纠错。
+由 <a href="https://www.code2ai.codes/">Code2AI（code2ai.codes）</a> 维护——我们自己做 Claude Code 接入服务，
+所以手册里所有验证方法都写成对任何一家都适用的形式，包括拿它来验我们。</p>
+</div></footer>
+</body>
+</html>
