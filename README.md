@@ -1,6 +1,8 @@
+<!-- description: 国内用 Claude Code 的完整手册：安装、ANTHROPIC_BASE_URL 端点配置、报错排查、网络问题与升级。每一步都给可直接复制的诊断命令和判断依据，不靠猜。开源 MIT。 -->
+
 # 国内怎么用上 Claude Code：安装、端点配置与排错手册
 
-**`claude-code-cn-setup`——Claude Code 在国内环境下的安装、配置与排错手册。** 每个问题都给了可直接复制的诊断命令，
+**`claude-code-china-guide`——Claude Code 在国内环境下的安装、配置与排错手册。** 每个问题都给了可直接复制的诊断命令，
 判断依据写明，不靠猜。
 
 Claude Code 出问题的地方几乎都能归到三件事：**装不上、装上了请求失败、用得好好的升不了级**。

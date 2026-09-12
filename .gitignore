@@ -9,3 +9,6 @@ venv/
 .env.*
 *.key
 *secret*
+
+# GitHub Pages 的生成产物，推到 gh-pages 分支,不进 main
+_site/
