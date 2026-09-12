@@ -1,6 +1,6 @@
-# claude-code-cn-setup
+# 国内怎么用上 Claude Code：安装、端点配置与排错手册
 
-**Claude Code 在国内环境下的安装、配置与排错手册。** 每个问题都给了可直接复制的诊断命令，
+**`claude-code-cn-setup`——Claude Code 在国内环境下的安装、配置与排错手册。** 每个问题都给了可直接复制的诊断命令，
 判断依据写明，不靠猜。
 
 Claude Code 出问题的地方几乎都能归到三件事：**装不上、装上了请求失败、用得好好的升不了级**。
@@ -23,6 +23,12 @@ Claude Code 出问题的地方几乎都能归到三件事：**装不上、装上
 > failures in another. Every section gives copy-pasteable diagnostic commands.
 > See [English](#english) below.
 
+## 还没跑起来？
+
+从零开始装、配、跑通第一条命令，看 [**`docs/getting-started.md`**](docs/getting-started.md)——三条路怎么选、两个环境变量怎么配、跑之前怎么自查，十来分钟。
+
+下面这份是给**已经在用、某一步出了问题**的人看的。
+
 ## 先花 10 秒定位
 
 动手前先跑这两条：
@@ -44,6 +50,7 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 | 两条都正常但 `claude` 报错 | 安装方式或路径 | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | `claude update` 卡住 | 发布源 | [`docs/upgrade.md`](docs/upgrade.md) |
 | 还没选好接入方式 | —— | [`docs/third-party-services.md`](docs/third-party-services.md) |
+| 还没装过，从头开始 | —— | [`docs/getting-started.md`](docs/getting-started.md) |
 
 ## 按报错现象直接跳转
 
@@ -62,6 +69,8 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 
 ## 文档
 
+- [`docs/getting-started.md`](docs/getting-started.md)——**从零到跑通**：三条路的取舍、
+  两个环境变量、跑通前的两条自查命令、常用命令，以及卡住了该去哪份文档
 - [`docs/install.md`](docs/install.md)——两种安装方式的取舍（npm / native）、镜像源、
   验证安装是否成功
 - [`docs/configuration.md`](docs/configuration.md)——用环境变量指定 API 端点，
@@ -146,6 +155,7 @@ curl -sI -m 10 https://api.anthropic.com/v1/messages | head -1
 | #1 ok, #2 times out | endpoint config | [`docs/configuration.md`](docs/configuration.md) |
 | both ok, `claude` still errors | install path | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | `claude update` hangs | release source | [`docs/upgrade.md`](docs/upgrade.md) |
+| nothing installed yet | — | [`docs/getting-started.md`](docs/getting-started.md) |
 | small requests fine, long ones hang | **path MTU / IPv6** | [`docs/network-issues.md`](docs/network-issues.md) |
 
 The last row is the one people rarely guess: if an intermediate hop has a smaller
